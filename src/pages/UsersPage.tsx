@@ -10,7 +10,9 @@ const UsersPage = () => {
             <Typography variant="h4" gutterBottom>
                 Users List
             </Typography>
-
+            <h1 className="text-3xl font-bold text-blue-600">
+                Tailwind is working 🚀
+            </h1>
             <TextField
                 label="Search by name"
                 fullWidth

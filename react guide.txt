@@ -303,6 +303,34 @@ deploy to vercel
 
 
 
+add tailwind to project
+1. npm install -D tailwindcss postcss
+
+2. npx tailwindcss@3.4.14 init -p       // (creates tailwind.config.js and postcss.config.js)
+
+3. edit tailwind.config.js
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+
+4. edit src/index.css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 
+5. import to App.tsx
+import "./index.css";
 
+6. add UserPage.tsx
+ <h1 className="text-3xl font-bold text-blue-600">
+      Tailwind is working 🚀
+    </h1>
