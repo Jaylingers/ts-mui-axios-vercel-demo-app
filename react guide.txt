@@ -1,0 +1,279 @@
+cd C:\Users\JAYLINGERS\Documents\GitHub\demo
+
+create-react-app ts-mui-axios-vercel-demo-app --template typescript
+cd mui-search-app
+npm install @mui/material @emotion/react @emotion/styled
+npm install axios
+idea . // open intellij
+npm start   // run app
+
+
+folder structure
+src/
+├── api/
+│   └── axios.ts
+│
+│
+├── components/
+│   └── UserTable.tsx
+│
+├── hooks/
+│   └── useUsers.ts
+│
+├── pages/
+│   └── UsersPage.tsx
+│
+├── types/
+│   └── user.ts
+│
+├── App.tsx
+└── index.tsx
+
+✔scalable
+✔ interview-friendly
+✔ easy to explain
+
+
+
+src/api/axios.ts
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: "https://jsonplaceholder.typicode.com",
+  timeout: 10000,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+export default api;
+
+
+
+src/types/user.ts
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  company: {
+    name: string;
+  };
+}
+
+
+
+src/hooks/useUsers.ts
+import {useEffect, useState} from "react"; // React hooks for state and side effects
+import {User} from "../types/user";        // TypeScript type for user
+import api from "../api/axios";              // Axios instance for API calls
+
+// Custom hook to fetch and manage users
+export const useUsers = () => {
+    // State to store all users fetched from API
+    const [users, setUsers] = useState<User[]>([]);
+
+    // State to store the current search input
+    const [search, setSearch] = useState("");
+
+    // State to track loading status while fetching users
+    const [loading, setLoading] = useState(true);
+
+    // State to store any error messages from API call
+    const [error, setError] = useState<string | null>(null);
+
+    // Function to fetch users from the API
+    const fetchUsers = () => {
+        // Define an async function to handle the API request
+        const fn = async () => {
+            try {
+                // Make GET request to /users endpoint
+                const response = await api.get<User[]>("/users");
+
+                // Store the fetched users in state
+                setUsers(response.data);
+            } catch (err) {
+                // If there is an error, store a friendly message
+                setError("Failed to load users");
+            } finally {
+                // Whether success or failure, stop the loading spinner
+                setLoading(false);
+            }
+        }
+        // Call the async function and ignore the returned promise
+        fn().then();
+    }
+
+    // useEffect to fetch users when the component mounts
+    // Empty dependency array [] ensures it runs only once
+    useEffect(fetchUsers, []);
+
+    // Filter users based on the search input (case-insensitive)
+    const filteredUsers = users.filter((user) =>
+        user.name.toLowerCase().includes(search.toLowerCase())
+    );
+
+    // Return everything needed by the component
+    return {
+        users: filteredUsers, // filtered users based on search
+        search,               // current search input value
+        setSearch,            // function to update search input
+        loading,              // loading status
+        error,                // error message if API fails
+    };
+};
+
+
+
+
+
+src/components/UserTable.tsx
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+} from "@mui/material";
+import { User } from "../types/user";
+
+interface Props {
+    users: User[];
+}
+
+const UserTable = ({ users }: Props) => {
+    return (
+        <TableContainer component={Paper}>
+            <Table>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Name</TableCell>
+                        <TableCell>Email</TableCell>
+                        <TableCell>Company</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {users.map((user) => (
+                        <TableRow key={user.id}>
+                            <TableCell>{user.name}</TableCell>
+                            <TableCell>{user.email}</TableCell>
+                            <TableCell>{user.company.name}</TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </TableContainer>
+    );
+};
+
+export default UserTable;
+
+
+
+
+
+
+
+
+src/pages/UsersPage.tsx
+import {Container, TextField, Typography, CircularProgress, Alert} from "@mui/material";
+import {useUsers} from "../hooks/useUsers";
+import UserTable from "../components/UserTable";
+
+const UsersPage = () => {
+    const {users, search, setSearch, loading, error} = useUsers();
+
+    return (
+        <Container sx={{mt: 4}}>
+            <Typography variant="h4" gutterBottom>
+                Users List
+            </Typography>
+
+            <TextField
+                label="Search by name"
+                fullWidth
+                margin="normal"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                inputProps={{ "data-testid": "search-input" }}
+            />
+
+            {loading && <CircularProgress/>}
+            {error && <Alert severity="error">{error}</Alert>}
+            {!loading && !error && <UserTable users={users}/>}
+        </Container>
+    );
+};
+
+export default UsersPage;
+
+
+
+src/App.tsx
+import UsersPage from "./pages/UsersPage";
+
+function App() {
+  return <UsersPage />;
+}
+
+export default App;
+
+
+1️. Install Cypress
+npm install cypress --save-dev
+
+2. open cypress
+npx cypress open
+
+3. Create test file
+cypress/e2e/user-search.cy.ts
+
+4. add test cases
+/// <reference types="cypress" />
+
+describe("User Search", () => {
+    beforeEach(() => {
+        cy.visit("http://localhost:3000");
+    });
+
+    it("should filter users when typing in search input", () => {
+        // Use data-testid to locate the input reliably
+        cy.get('[data-testid="search-input"]')
+            .type("Leanne", {delay: 500}); // slower typing for visibility
+
+        // Wait 1 second to clearly see the table update
+        cy.wait(3000)
+
+        // Table should only display users matching search
+        cy.get("table tbody tr").each(($row) => {
+            cy.wrap($row).contains(/Leanne/i);
+        });
+    });
+
+    it("should show no results if search does not match", () => {
+        cy.get('[data-testid="search-input"]')
+            .type("NonExistingName", {delay: 300}); // slower typing for visibility
+
+        // Wait 1 second to clearly see the table update
+        cy.wait(3000);
+
+
+        cy.get("table tbody tr").should("have.length", 0);
+    });
+});
+
+
+5. create test video (edit cypress.config.ts)
+import { defineConfig } from "cypress";
+
+export default defineConfig({
+  e2e: {
+    baseUrl: "http://localhost:3000",
+    video: true,             // enable/disable video recording
+    videoCompression: 32,    // compress size (0=none, higher=more compressed)
+    videosFolder: "cypress/videos", // folder to save videos
+  },
+});
+
+6. npx cypress run --spec "cypress/e2e/user-search.cy.ts"
