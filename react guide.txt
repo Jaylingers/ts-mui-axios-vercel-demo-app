@@ -277,3 +277,32 @@ export default defineConfig({
 });
 
 6. npx cypress run --spec "cypress/e2e/user-search.cy.ts"
+
+
+
+
+
+
+
+
+deploy to vercel
+
+1. push project to github
+2. npm i -g vercel   // install vercel cli
+3. go to https://vercel.com/jaylingers-projects and create project and import github
+4. open git bash terminal
+5. run "vercel"
+6. link to existing project named jaylingers-projects/ts-mui-axios-vercel-demo-app
+	Set up and deploy “~\Documents\GitHub\ts-mui-axios-vercel-demo-app”? yes
+	? Which scope should contain your project? jaylingers' projects
+	? Found project “jaylingers-projects/ts-mui-axios-vercel-demo-app”. Link to it? yes
+	? Would you like to pull environment variables now? yes
+
+
+
+
+
+
+
+
+
