@@ -10,6 +10,18 @@ const UsersPage = () => {
             <Typography variant="h4" component="h1" gutterBottom fontWeight={700}>
                 Users List 🚀
             </Typography>
+            <Typography
+                variant="body2"
+                color="text.secondary"
+                textAlign="left"
+                mt={2}
+            >
+                User data provided by the {" "}
+                <a href="https://jsonplaceholder.typicode.com/users" target="_blank" rel="noreferrer">
+                    JSONPlaceholder users endpoint
+                </a>
+                .
+            </Typography>
             <TextField
                 label="Search by name"
                 fullWidth
@@ -49,7 +61,12 @@ const UsersPage = () => {
 
             {loading && <CircularProgress/>}
             {error && <Alert severity="error">{error}</Alert>}
-            {!loading && !error && <UserTable users={users}/>}
+            {!loading && !error && (
+                <>
+                    <UserTable users={users}/>
+                </>
+            )}
+            <br/>
             <div className="flex flex-wrap gap-4 my-8 justify-center text-center">
                 <div className="px-8 py-4 rounded-[999px] bg-[radial-gradient(circle_at_top,_#fdf2f8,_#f5d0fe,_#c084fc)] text-purple-900 font-semibold shadow-xl shadow-fuchsia-500/25 flex items-center justify-center min-w-[260px] gap-2 border border-white/60">
                     <span className="text-2xl">🎨</span>
