@@ -47,12 +47,13 @@ const UserTable = ({ users }: Props) => {
             component={Paper}
             sx={(theme) => ({
                 borderRadius: 3,
-                overflow: "hidden",
+                overflowX: "auto",
+                overflowY: "hidden",
                 border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
                 boxShadow: `0 20px 45px ${alpha(theme.palette.common.black, 0.15)}`,
             })}
         >
-            <Table sx={{ minWidth: 650 }}>
+            <Table sx={{ minWidth: { xs: 500, sm: 650 } }}>
                 <TableHead>
                     <TableRow>
                         <StyledTableHeadCell>Name</StyledTableHeadCell>
